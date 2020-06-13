@@ -10,7 +10,9 @@ if [ ! $(which zsh)  ]; then
 fi
 
 # make sure default shell is zsh
-chsh -s $(which zsh)
+if [[ $SHELL != $(which zsh) ]]; then                                                                                                                                         [master][ruby-2.6.5]
+  chsh -s $(which zsh)
+fi
 
 dir=~/dotfiles
 olddir=~/dotfiles_old
