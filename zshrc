@@ -46,7 +46,5 @@ source "$(brew --prefix)/etc/profile.d/z.sh"
 # fix RVM
 source $HOME/.rvm/scripts/rvm
 
-alias serve_https="ruby -r webrick -r webrick/https -r openssl -e 's=WEBrick::HTTPServer.new(Port: 8080, SSLEnable: true, SSLCertificate: OpenSSL::X509::Certificate.new(File.read(\"./cert.pem\")), SSLPrivateKey: OpenSSL::PKey::RSA.new(File.read(\"./key.pem\")), DocumentRoot: File.expand_path(\".\")); trap(\"INT\"){s.shutdown}; s.start'"
-
 # calculator function
 c() { printf "%s\n" "$*" | bc }
