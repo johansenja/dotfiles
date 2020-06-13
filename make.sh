@@ -4,6 +4,14 @@ set -eE
 # stop script on interrupt (esp. for loops)
 trap 'exit 130' INT
 
+if [ ! $(which zsh)  ]; then
+  echo "Fetching ZSH"
+  sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+fi
+
+# make sure default shell is zsh
+chsh -s $(which zsh)
+
 dir=~/dotfiles
 olddir=~/dotfiles_old
 files=$(git ls-files *[^.sh])
