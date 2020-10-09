@@ -5,7 +5,7 @@ ZSH=$HOME/.oh-my-zsh
 ZSH_THEME="gallois"
 
 # Useful plugins for Rails development with Sublime Text
-plugins=(gitfast git last-working-dir common-aliases sublime zsh-syntax-highlighting history-substring-search)
+plugins=(gitfast git last-working-dir common-aliases sublime history-substring-search)
 
 # Prevent Homebrew from reporting - https://github.com/Homebrew/brew/blob/master/share/doc/homebrew/Analytics.md
 export HOMEBREW_NO_ANALYTICS=1
@@ -45,6 +45,9 @@ source "$(brew --prefix)/etc/profile.d/z.sh"
 
 # fix RVM
 source $HOME/.rvm/scripts/rvm
+
+# syntax highlighting
+source /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
 # calculator function
 c() { printf "%s\n" "$*" | bc }

@@ -4,7 +4,7 @@ set -eE
 # stop script on interrupt (esp. for loops)
 trap 'exit 130' INT
 
-if [ ! $(which zsh)  ]; then
+if [ ! -d ~/.oh-my-zsh  ]; then
   echo "Fetching ZSH"
   sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 fi
@@ -47,10 +47,10 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
 
   echo "installing packages with homebrew"
   # cmake macvim python mono go nodejs needed for YCM (vim)
-  packages="z redis postgresql bat jq python3 cmake macvim mono go nodejs"
+  packages="z redis postgresql bat jq python3 cmake macvim mono go nodejs zsh-syntax-highlighting yarn docker terraform"
   for package in $packages; do
     # Check if already installed
-    if brew info $package > /dev/null; then
+    if brew list $package > /dev/null; then
       echo "$package already installed. Skipping"
     else
       echo "Installing $package from homebrew"
@@ -62,6 +62,13 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
 else
   echo "No OS-specific setup implemented"
   exit 0
+fi
+
+if which rvm > /dev/null; then
+  echo "rvm already installed"
+else
+  echo "installing rvm"
+  curl -sSL https://get.rvm.io | bash
 fi
 
 if [ ! -d ~/.vim/plugged ]; then
@@ -80,5 +87,8 @@ if [ ! -d ~/.vim/plugged ]; then
 else
   echo "~/.vim/plugged already exists. Not fetching Plugged or installing plugins"
 fi
+
+echo "Removing old dotfiles"
+rm -r $olddir
 
 echo "Done!"
