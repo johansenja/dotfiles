@@ -1,6 +1,7 @@
 begin
   require 'rubygems'
   require 'pry'
+  require 'pry-editline'
 rescue LoadError
 end
 

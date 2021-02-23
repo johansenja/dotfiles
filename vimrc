@@ -14,16 +14,20 @@ set nobackup
 set undodir=~/.vim/undodir
 set undofile
 set incsearch
-set colorcolumn=120
+set colorcolumn=100
+let &colorcolumn=join(range(101,999),",")
+set textwidth=100
+set scrolloff=10
 set autoread
 set relativenumber
 set number
+set wildmenu
+set ruler
+set tags=.git/tags,./tags,tags;$HOME
 
-highlight ColorColumn ctermbg=darkcyan guibg=darkcyan
+highlight ColorColumn ctermbg=187
 highlight Pmenu ctermbg=darkcyan guibg=darkcyan ctermfg=white guifg=white
 highlight VertSplit ctermbg=red ctermfg=red guibg=red guifg=red
-highlight QuickScopePrimary ctermfg=darkred gui=underline
-highlight QuickScopeSecondary ctermfg=darkblue gui=underline
 
 autocmd FileType typescript setlocal completeopt+=menu,preview
 
@@ -44,6 +48,7 @@ let g:ale_fixers = {
 \   'css': ['prettier'],
 \}
 let g:ale_fix_on_save = 1
+let g:ale_completion_enabled = 1
 if executable('rg')
   let g:rg_derive_root='true'
 endif
@@ -57,15 +62,37 @@ let g:ycm_key_list_stop_completion = ['<C-y>']
 let g:tsuquyomi_completion_detail = 1
 let g:airline_theme='light'
 let g:rufo_auto_formatting = 1
-let g:closetag_filenames = '*.html'
-let g:closetag_xhtml_filenames = '*.jsx,*.tsx'
-let g:closetag_filetypes = 'html'
-let g:closetag_xhtml_filetypes = 'tsx,jsx,typescriptreact,javascriptreact'
-let g:closetag_emptyTags_caseSensitive = 1
-let g:closetag_regions = {
-    \ 'typescript.tsx': 'jsxRegion,tsxRegion',
-    \ 'javascript.jsx': 'jsxRegion',
-    \ }
+" use ctags to go to definition in ruby
+" autocmd FileType ruby :nnoremap <Leader>gd <C-]>
+
+" if executable('steep')
+"     au User lsp_setup call lsp#register_server({
+"         \ 'name': 'steep',
+"         \ 'cmd': {server_info->['bundle', 'exec', 'steep', 'langserver']},
+"         \ 'allowlist': ['ruby'],
+"         \ })
+" endif
+
+function! s:on_lsp_buffer_enabled() abort
+    setlocal omnifunc=lsp#complete
+    setlocal signcolumn=yes
+    if exists('+tagfunc') | setlocal tagfunc=lsp#tagfunc | endif
+    nmap <buffer> gd <plug>(lsp-definition)
+    nmap <buffer> gr <plug>(lsp-references)
+    nmap <buffer> gi <plug>(lsp-implementation)
+    nmap <buffer> <leader>rn <plug>(lsp-rename)
+    nmap <buffer> [g <Plug>(lsp-previous-diagnostic)
+    nmap <buffer> ]g <Plug>(lsp-next-diagnostic)
+    nmap <buffer> K <plug>(lsp-hover)
+
+    " refer to doc to add more commands
+endfunction
+
+augroup lsp_install
+    au!
+    " call s:on_lsp_buffer_enabled only for languages that has the server registered.
+    " au FileType typescript lsp_buffer_enabled call s:on_lsp_buffer_enabled()
+augroup END
 
 call plug#begin('~/.vim/plugged')
 Plug 'jremmen/vim-ripgrep'
@@ -78,17 +105,23 @@ Plug 'prettier/vim-prettier', {
   \ }
 " Plug 'Valloric/YouCompleteMe'
 Plug 'dense-analysis/ale'
-Plug 'sirosen/vim-rockstar'
 Plug 'Quramy/tsuquyomi'
 Plug 'nicwest/vim-camelsnek'
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
-Plug 'unblevable/quick-scope'
 Plug 'ruby-formatter/rufo-vim'
 Plug 'tpope/vim-endwise'
-Plug 'alvan/vim-closetag'
+Plug 'tpope/vim-commentary'
+Plug 'jgdavey/vim-blockle'
+Plug 'prabirshrestha/vim-lsp'
+Plug 'vim-ruby/vim-ruby'
+Plug 'tpope/vim-dadbod'
+Plug 'kristijanhusak/vim-dadbod-ui'
+Plug 'tpope/vim-dotenv'
+Plug 'AndrewRadev/splitjoin.vim'
+Plug 'vim-crystal/vim-crystal'
 call plug#end()
 
 :nnoremap <Leader>. <C-w>
@@ -97,14 +130,16 @@ call plug#end()
 :nnoremap <Leader>s <C-s>
 :nnoremap <Leader>e :Vex<CR>
 :nnoremap <Leader>u :UndotreeToggle<CR>
-:nnoremap <Leader>ps :Rg<SPACE>
+" ÷ = alt+/ on mac
+:nnoremap ÷ :Rg<SPACE>
+:nnoremap <Leader>/ *
 :nnoremap <C-p> :GFiles<CR>
 :nnoremap <silent> <Leader>gd :ALEGoToDefinition<CR>
 " :nnoremap <silent> <Leader>gf :YcmCompleter FixIt<CR>
 :nnoremap <Leader>y "*y
 :vnoremap <Leader>y "*y
 :nnoremap <Leader>p "*p
-:nnoremap <Leader>r :%s/
+:nnoremap <Leader>r "zyiw :%s/<C-r>z
 " prettier uses leader p by default to format, but I remapped leader p for
 " pasting from system clipboard
 " enforce d as black hole register, and use x for cutting
@@ -130,6 +165,12 @@ call plug#end()
 " corresponds to alt-l on mac
 :nnoremap ¬ <C-w>l
 
+function DbGuiNewtab()
+  :tabe
+  :DBUI
+endfunction
+:nnoremap <Leader>db :exec DbGuiNewtab()<CR>
+
 " move visual lines up and down
 :vnoremap J :m'>+1<CR>gv=gv
 :vnoremap K :m'>-2<CR>gv=gv
@@ -143,6 +184,8 @@ call plug#end()
 autocmd FileType typescript :nmap <buffer> <Leader>n <Plug>(TsuquyomiRenameSymbol)
 autocmd FileType typescript :nmap <buffer> <Leader>N <Plug>(TsuquyomiRenameSymbolC)
 autocmd FileType typescript :nmap <Leader>f <Plug>(Prettier)
+autocmd FileType typescript :inoremap <C-q> <C-x><C-o>
+autocmd FileType typescriptreact :inoremap <C-q> <C-x><C-o>
 
 if &term =~ '^screen'
   " tmux will send xterm-style keys when its xterm-keys option is on
@@ -151,3 +194,37 @@ if &term =~ '^screen'
   execute "set <xRight>=\e[1;*C"
   execute "set <xLeft>=\e[1;*D"
 endif
+
+" crystal syntax for gloss files (for now)
+autocmd BufNewFile,BufRead *.gl set syntax=crystal
+
+set wildignore+=.git,log/*,tmp/*,.DS_Store,*.zip,*.tgz,*.ico,*.jpg,*.png,*.gif,.config,.cache,node_modules/*,*.min.*
+" global find/replace inside working directory
+function! FindReplace()
+  set noignorecase
+  " figure out which directory we're in
+	let dir = expand('%:h')
+  " ask for patterns
+  call inputsave()
+  let find = input('[global find and replace] Pattern: ')
+  call inputrestore()
+  let replace = input('[global find and replace] Replacement: ')
+  call inputrestore()
+  " are you sure?
+  let confirm = input('[global find and replace] WARNING: About to replace ' . find . ' with ' . replace . ' in ' . dir . '/**/* (y/n):')
+  " clear echoed message
+  :redraw
+  if confirm == 'y'
+    " find with rigrep (populate quickfix )
+    :silent exe 'Rg ' . find
+    " use cfdo to substitute on all quickfix files
+    :silent exe 'cfdo %s/' . find . '/' . replace . '/g | update'
+    " close quickfix window
+    :silent exe 'cclose'
+    :echom('Replaced ' . find . ' with ' . replace . ' in all files in ' . dir )
+  else
+    :echom('Find/Replace Aborted :(')
+    return
+  endif
+endfunction
+:nnoremap ® :call FindReplace()<CR>

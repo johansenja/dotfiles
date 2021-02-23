@@ -13,3 +13,6 @@ alias tmux="tmux -2"
 
 # use homebrew's ctags
 alias ctags="`brew --prefix`/bin/ctags"
+
+alias python="python3"
+alias pip="pip3"
