@@ -24,6 +24,8 @@ set number
 set wildmenu
 set ruler
 set tags=.git/tags,./tags,tags;$HOME
+set lazyredraw
+set ttyfast
 
 highlight ColorColumn ctermbg=187
 highlight Pmenu ctermbg=darkcyan guibg=darkcyan ctermfg=white guifg=white
@@ -186,6 +188,9 @@ autocmd FileType typescript :nmap <buffer> <Leader>N <Plug>(TsuquyomiRenameSymbo
 autocmd FileType typescript :nmap <Leader>f <Plug>(Prettier)
 autocmd FileType typescript :inoremap <C-q> <C-x><C-o>
 autocmd FileType typescriptreact :inoremap <C-q> <C-x><C-o>
+
+" use leader enter to open file from quick fix in new vertical split
+autocmd! FileType qf nnoremap <buffer> <leader><Enter> <C-w><Enter><C-w>L
 
 if &term =~ '^screen'
   " tmux will send xterm-style keys when its xterm-keys option is on
