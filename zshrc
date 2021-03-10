@@ -51,3 +51,16 @@ source /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
 # calculator function
 c() { printf "%s\n" "$*" | bc }
+
+# lat - cat if it's a file, or ls if its a directory
+lat () {
+	if [ -d $1 ]
+	then
+		ls -G $1
+	elif [ -f $1 ]
+  then
+    cat $1
+  else
+    echo "Usage: lat [path], performs cat if path is a file, and ls if a directory"
+	fi
+}
