@@ -15,7 +15,6 @@ set undodir=~/.vim/undodir
 set undofile
 set incsearch
 set colorcolumn=100
-let &colorcolumn=join(range(101,999),",")
 set textwidth=100
 set scrolloff=10
 set autoread
@@ -26,10 +25,16 @@ set ruler
 set tags=.git/tags,./tags,tags;$HOME
 set lazyredraw
 set ttyfast
+if !has("nvim")
+  " allow mouse to work beyond 220th column
+  set ttymouse=sgr
+endif
+set mouse=a
 
-highlight ColorColumn ctermbg=187
-highlight Pmenu ctermbg=darkcyan guibg=darkcyan ctermfg=white guifg=white
-highlight VertSplit ctermbg=red ctermfg=red guibg=red guifg=red
+highlight ColorColumn ctermbg=188
+highlight Pmenu ctermbg=137 guibg=LightSalmon3 ctermfg=254 guifg=Grey89
+highlight VertSplit ctermbg=54 ctermfg=54 guibg=Purple4 guifg=Purple4
+highlight Visual ctermfg=15 ctermbg=89 guifg=White guibg=LightBlue
 
 autocmd FileType typescript setlocal completeopt+=menu,preview
 
@@ -51,19 +56,25 @@ let g:ale_fixers = {
 \}
 let g:ale_fix_on_save = 1
 let g:ale_completion_enabled = 1
+let g:ale_linters = {
+\   'javascript': ['eslint'],
+\   'typescript': ['eslint'],
+\   'typescriptreact': ['eslint'],
+\}
+
 if executable('rg')
   let g:rg_derive_root='true'
 endif
-" let g:ctrlp_user_command = ['.git/', 'git --git-dir=%s/.git ls-files -oc --exclude-standard']
 let g:netrw_banner = 0
 let g:netrw_browse_split = 2
 let g:netrw_winsize = 15
-let g:ycm_autoclose_preview_window_after_completion = 1
-let g:ycm_key_list_select_completion = ['<TAB>', '<Down>']
-let g:ycm_key_list_stop_completion = ['<C-y>']
 let g:tsuquyomi_completion_detail = 1
-let g:airline_theme='light'
+" gui vim only
+" set ballooneval
+" autocmd FileType typescript setlocal balloonexpr=tsuquyomi#balloonexpr()
+
 let g:rufo_auto_formatting = 1
+let g:SuperTabDefaultCompletionType = "<c-n>"
 " use ctags to go to definition in ruby
 " autocmd FileType ruby :nnoremap <Leader>gd <C-]>
 
@@ -96,10 +107,19 @@ augroup lsp_install
     " au FileType typescript lsp_buffer_enabled call s:on_lsp_buffer_enabled()
 augroup END
 
+" let g:LanguageClient_serverCommands = {
+"   \ 'typescript': ['tsserver'],
+"   \ 'typescriptreact': ['tsserver'],
+"   \ 'javascript': ['tsserver'],
+"   \ }
+
+highlight iCursor ctermfg=Black ctermbg=Black guibg=Black guifg=Black
+highlight vCursor ctermfg=89 ctermbg=89 guibg=DeepPink4 guibg=DeepPink4
+set guicursor=n-c:block-blinkon0-Cursor,i-ci:block-blinkon175-blinkoff175-iCursor,v:hor100-blinkon175-blinkoff175-vCursor
+
 call plug#begin('~/.vim/plugged')
 Plug 'jremmen/vim-ripgrep'
 Plug 'leafgarland/typescript-vim'
-Plug 'vim-utils/vim-man'
 Plug 'mbbill/undotree'
 Plug 'prettier/vim-prettier', {
   \ 'do': 'yarn install',
@@ -118,15 +138,26 @@ Plug 'tpope/vim-endwise'
 Plug 'tpope/vim-commentary'
 Plug 'jgdavey/vim-blockle'
 Plug 'prabirshrestha/vim-lsp'
+" Plug 'autozimu/LanguageClient-neovim', {
+"     \ 'branch': 'next',
+"     \ 'do': 'bash install.sh',
+"     \ }
 Plug 'vim-ruby/vim-ruby'
 Plug 'tpope/vim-dadbod'
 Plug 'kristijanhusak/vim-dadbod-ui'
 Plug 'tpope/vim-dotenv'
 Plug 'AndrewRadev/splitjoin.vim'
 Plug 'vim-crystal/vim-crystal'
+Plug 'justinmk/vim-syntax-extra'
+Plug 'rrethy/vim-hexokinase', { 'do': 'make hexokinase' }
+Plug 'johansenja/qdocs-vim'
+Plug 'justinmk/vim-sneak'
+Plug 'ervandew/supertab'
+Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app && yarn install'  }
+Plug 'Shougo/vimproc.vim', { 'do': 'make' }
 call plug#end()
 
-:nnoremap <Leader>. <C-w>
+:nmap <Leader>. <C-w>
 :nnoremap <Leader>tsi :TsuImport<CR>
 :nnoremap <Leader>v <C-v>
 :nnoremap <Leader>s <C-s>
@@ -158,6 +189,7 @@ call plug#end()
 :nmap § :
 :nmap §w :w<CR>
 :nmap §q :q<CR>
+:nmap <Leader>s <C-w>v<C-w>l<C-]>
 " corresponds to alt-h on mac
 :nnoremap ˙ <C-w>h
 " corresponds to alt-j on mac
@@ -233,3 +265,7 @@ function! FindReplace()
   endif
 endfunction
 :nnoremap ® :call FindReplace()<CR>
+
+let g:airline_theme='soda'
+" soda doesn't have this by default
+au VimEnter * if exists('airline#themes#soda#palette') | let g:airline#themes#soda#palette.normal_modified = { 'airline_c': [ '#ffffff', '#d75faf', 255, 169, ''] } | endif
