@@ -16,7 +16,7 @@ fi
 
 dir=~/dotfiles
 olddir=~/dotfiles_old
-files=$(git ls-files *[^.sh])
+files=$(git ls-files *[^.sh,^.terminal])
 
 echo "Creating $olddir for backup of any existing dotfiles in ~"
 mkdir -p $olddir

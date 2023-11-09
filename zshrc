@@ -7,6 +7,8 @@ ZSH_THEME="gallois"
 # Useful plugins for Rails development with Sublime Text
 plugins=(gitfast git last-working-dir common-aliases sublime history-substring-search)
 
+export BAT_THEME="gruvbox-light"
+
 # Prevent Homebrew from reporting - https://github.com/Homebrew/brew/blob/master/share/doc/homebrew/Analytics.md
 export HOMEBREW_NO_ANALYTICS=1
 
@@ -33,6 +35,8 @@ export VISUAL=vim
 export EDITOR=$VISUAL
 export BUNDLER_EDITOR=$EDITOR
 
+export VIMINIT="source ~/.vimrc"
+
 # pkg confg / openssl for crystal
 export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/usr/local/opt/openssl/lib/pkgconfig
 export PATH="$PATH:/usr/local/opt/gettext/bin"
@@ -47,7 +51,7 @@ source "$(brew --prefix)/etc/profile.d/z.sh"
 source $HOME/.rvm/scripts/rvm
 
 # syntax highlighting
-source /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+source "$(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
 
 # calculator function
 c() { printf "%s\n" "$*" | bc }
