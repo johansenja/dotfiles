@@ -47,7 +47,7 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
 
   echo "installing packages with homebrew"
   # cmake macvim python mono go nodejs needed for YCM (vim)
-  packages="z redis postgresql bat jq python3 cmake macvim mono go nodejs zsh-syntax-highlighting yarn docker terraform rg tmux"
+  packages="z redis postgresql bat jq python3 cmake macvim mono go nodejs zsh-syntax-highlighting yarn docker terraform rg tmux nvim"
   for package in $packages; do
     # Check if already installed
     if brew list $package > /dev/null; then
