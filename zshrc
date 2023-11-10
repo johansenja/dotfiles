@@ -2,7 +2,7 @@ ZSH=$HOME/.oh-my-zsh
 
 # You can change the theme with another one:
 #   https://github.com/robbyrussell/oh-my-zsh/wiki/themes
-ZSH_THEME="gallois"
+ZSH_THEME="gnzh"
 
 # Useful plugins for Rails development with Sublime Text
 plugins=(gitfast git last-working-dir common-aliases sublime history-substring-search)
