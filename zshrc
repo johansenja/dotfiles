@@ -37,6 +37,8 @@ export BUNDLER_EDITOR=$EDITOR
 
 export VIMINIT="source ~/.vimrc"
 
+export AWS_REGION=eu-west-1
+
 # pkg confg / openssl for crystal
 export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/usr/local/opt/openssl/lib/pkgconfig
 export PATH="$PATH:/usr/local/opt/gettext/bin"
