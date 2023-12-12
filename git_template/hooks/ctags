@@ -2,5 +2,6 @@
 set -e
 PATH="/usr/local/bin:$PATH"
 trap 'rm -f "31195.tags"' EXIT
-git ls-files |   ctags --tag-relative -L - -f"31195.tags" --languages=ruby
-mv "31195.tags" "tags"
+git ls-files | ctags --tag-relative -L - -f"31195.tags" --languages=ruby
+dest=$([ -d .git ] && echo ".git/tags" || echo "tags")
+mv "31195.tags" $dest
