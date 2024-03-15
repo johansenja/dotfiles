@@ -35,6 +35,7 @@ highlight ColorColumn ctermbg=188
 highlight Pmenu ctermbg=137 guibg=LightSalmon3 ctermfg=254 guifg=Grey89
 highlight VertSplit ctermbg=54 ctermfg=54 guibg=Purple4 guifg=Purple4
 highlight Visual ctermfg=15 ctermbg=89 guifg=White guibg=LightBlue
+highlight PmenuThumb ctermbg=94 guibg=Orange4 ctermfg=180 guifg=Tan
 
 autocmd FileType typescript setlocal completeopt+=menu,preview
 
@@ -53,6 +54,7 @@ let g:ale_fixers = {
 \   'typescriptreact': ['eslint', 'prettier'],
 \   'scss': ['prettier'],
 \   'css': ['prettier'],
+\   'ruby': ['rufo'],
 \}
 let g:ale_fix_on_save = 1
 let g:ale_completion_enabled = 1
@@ -61,6 +63,7 @@ let g:ale_linters = {
 \   'typescript': ['eslint'],
 \   'typescriptreact': ['eslint'],
 \}
+" let g:ale_floating_window_border = ['║','═','╔','╗','╝','╚','║','═',]
 
 if executable('rg')
   let g:rg_derive_root='true'
@@ -73,18 +76,26 @@ let g:tsuquyomi_completion_detail = 1
 " set ballooneval
 " autocmd FileType typescript setlocal balloonexpr=tsuquyomi#balloonexpr()
 
-let g:rufo_auto_formatting = 1
+" let g:rufo_auto_formatting = 1
 let g:SuperTabDefaultCompletionType = "<c-n>"
 " use ctags to go to definition in ruby
 " autocmd FileType ruby :nnoremap <Leader>gd <C-]>
 
-" if executable('steep')
+" if executable('tsserver')
 "     au User lsp_setup call lsp#register_server({
-"         \ 'name': 'steep',
-"         \ 'cmd': {server_info->['bundle', 'exec', 'steep', 'langserver']},
-"         \ 'allowlist': ['ruby'],
+"         \ 'name': 'tsserver',
+"         \ 'cmd': {server_info->['tsserver']},
+"         \ 'allowlist': ['typescript', 'typescriptreact', 'javascript'],
 "         \ })
 " endif
+
+if executable('ruby-lsp')
+    au User lsp_setup call lsp#register_server({
+        \ 'name': 'ruby-lsp',
+        \ 'cmd': {server_info->['ruby-lsp']},
+        \ 'allowlist': ['ruby'],
+        \ })
+endif
 
 function! s:on_lsp_buffer_enabled() abort
     setlocal omnifunc=lsp#complete
@@ -104,8 +115,10 @@ endfunction
 augroup lsp_install
     au!
     " call s:on_lsp_buffer_enabled only for languages that has the server registered.
-    " au FileType typescript lsp_buffer_enabled call s:on_lsp_buffer_enabled()
+    au User lsp_buffer_enabled call s:on_lsp_buffer_enabled()
 augroup END
+
+let g:lsp_document_code_action_signs_enabled = 0
 
 " let g:LanguageClient_serverCommands = {
 "   \ 'typescript': ['tsserver'],
@@ -125,7 +138,6 @@ Plug 'prettier/vim-prettier', {
   \ 'do': 'yarn install',
   \ 'branch': 'release/0.x'
   \ }
-" Plug 'Valloric/YouCompleteMe'
 Plug 'dense-analysis/ale'
 Plug 'Quramy/tsuquyomi'
 Plug 'nicwest/vim-camelsnek'
@@ -133,15 +145,12 @@ Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
-Plug 'ruby-formatter/rufo-vim'
 Plug 'tpope/vim-endwise'
 Plug 'tpope/vim-commentary'
 Plug 'jgdavey/vim-blockle'
 Plug 'prabirshrestha/vim-lsp'
-" Plug 'autozimu/LanguageClient-neovim', {
-"     \ 'branch': 'next',
-"     \ 'do': 'bash install.sh',
-"     \ }
+Plug 'rhysd/vim-lsp-ale'
+Plug 'mattn/vim-lsp-settings'
 Plug 'vim-ruby/vim-ruby'
 Plug 'tpope/vim-dadbod'
 Plug 'kristijanhusak/vim-dadbod-ui'
@@ -155,6 +164,7 @@ Plug 'justinmk/vim-sneak'
 Plug 'ervandew/supertab'
 Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app && yarn install'  }
 Plug 'Shougo/vimproc.vim', { 'do': 'make' }
+Plug 'jmg5e/vim-css-js-converter'
 call plug#end()
 
 :nmap <Leader>. <C-w>
@@ -198,6 +208,8 @@ call plug#end()
 :nnoremap ˚ <C-w>k
 " corresponds to alt-l on mac
 :nnoremap ¬ <C-w>l
+" go to css file
+:nnoremap <Leader>css :vsp <C-R>=expand('%:p:r') . '.module.scss'<CR><CR>
 
 function DbGuiNewtab()
   :tabe
@@ -214,6 +226,11 @@ endfunction
 " jump between errors with ale
 :nmap <silent> <C-k> <Plug>(ale_previous_wrap)
 :nmap <silent> <C-j> <Plug>(ale_next_wrap)
+:nmap <Leader>h :LspHover<CR>
+:nmap <Leader>d :LspPeekDefinition<CR>
+:nmap <Leader>a :LspCodeAction<CR>
+
+:nmap <Leader>j :%!jq .<CR>
 
 autocmd FileType typescript :nmap <buffer> <Leader>n <Plug>(TsuquyomiRenameSymbol)
 autocmd FileType typescript :nmap <buffer> <Leader>N <Plug>(TsuquyomiRenameSymbolC)
